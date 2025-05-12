@@ -147,8 +147,8 @@ select:
     optimistic: true
     icon: mdi:electric-switch
     options:
-      - Always Off
       - Always On
+      - Always Off
       - Restore Power Off State
     on_value:
       then:
