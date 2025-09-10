@@ -4,8 +4,8 @@ substitutions:
   # Allows ESP device to be automatically lined to an 'Area' in Home Assistant. Typically used for areas such as 'Lounge Room', 'Kitchen' etc
   room: ""
   device_description: "athom smart plug v2"
-  project_name: "Athom Technology.Smart Plug V2"
-  project_version: "v2.0.8-dev"
+  project_name: "China Athom Technology.Athom Plug V2"
+  project_version: "v2.0.9-dev"
   sensor_update_interval: "10s"
   relay_restore_mode: ALWAYS_ON
   # Current Limit in Amps. AU Plug = 10. IL, BR, EU, UK, US Plug = 16.
@@ -49,6 +49,7 @@ esphome:
   platformio_options:
     board_upload.flash_size: 2MB
     board_upload.maximum_size: 2097152
+    board_build.ldscript: eagle.flash.2m.ld
 
 esp8266:
   board: esp8285
@@ -162,14 +163,16 @@ sensor:
     entity_category: diagnostic
     device_class: ""
 
+  # CSE7766 power monitoring chip
   - platform: cse7766
     id: athom_cse7766
     current:
       name: "Current"
+      id: plug_current  # Added ID so we can reference this in other sensors
       icon: mdi:current-ac
       filters:
         - throttle_average: ${sensor_update_interval}
-        - lambda: if (x < 0.060) return 0.0; else return x;   #For the chip will report less than 3w power when no load is connected
+        - lambda: if (x < 0.060) return 0.0; else return x;   # For the chip will report less than 3w power when no load is connected
       on_value_range:
         - above: ${current_limit}
           then:
@@ -177,6 +180,7 @@ sensor:
 
     voltage:
       name: "Voltage"
+      id: plug_voltage  # Added ID so we can reference this in other sensors
       icon: mdi:sine-wave
       filters:
         - throttle_average: ${sensor_update_interval}
@@ -187,7 +191,7 @@ sensor:
       icon: mdi:flash
       filters:
         - throttle_average: ${sensor_update_interval}
-        - lambda: if (x < 3.0) return 0.0; else return x;    #For the chip will report less than 3w power when no load is connected
+        - lambda: if (x < 3.0) return 0.0; else return x;    # For the chip will report less than 3w power when no load is connected
 
     energy:
       name: "Energy"
@@ -207,7 +211,6 @@ sensor:
               id(total_energy) += current_energy_value - previous_energy_value;
               previous_energy_value = current_energy_value;
               id(total_energy_sensor).update();
-
 
     apparent_power:
       name: "Apparent Power"
