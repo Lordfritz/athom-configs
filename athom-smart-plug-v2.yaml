@@ -89,9 +89,7 @@ wifi:
   domain: "${dns_domain}"
   ssid: !secret wifi_ssid
   password: !secret wifi_password
-
-mdns:
-  disabled: false
+  min_auth_mode: WPA2
 
 mdns:
   disabled: false
