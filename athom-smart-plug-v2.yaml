@@ -94,9 +94,6 @@ wifi:
 mdns:
   disabled: false
 
-mdns:
-  disabled: false
-
 captive_portal:
 
 dashboard_import:
